@@ -25,15 +25,27 @@ const deleteErrorMsg = (element) => {
   errorMsg.remove();
 };
 
+let itemCounterId = 0;
+
 const createContact = () => {
   if (name.value == "" || phoneNum.value == "") {
     createErrorMsg(inputFields);
   } else {
     const contact = document.createElement("li");
+    const uniqueId = `item-${itemCounterId++}`;
+    contact.id = uniqueId;
+
     contact.innerHTML = `<input type="text" value="${name.value}" disabled>
          <input type="tel" value="${phoneNum.value}" disabled>
          <button id="btn-edit" class="btn-edit">Redigera</button>
          <button id="btn-delete" class="btn-delete">Radera</button>`;
+
+    const editBtn = contact.querySelector(".btn-edit");
+    const deleteBtn = contact.querySelector(".btn-delete");
+
+    editBtn.onclick = () => toggleEdit(uniqueId);
+    deleteBtn.onclick = () => deleteContact(uniqueId);
+
     contactList.appendChild(contact);
     deleteErrorMsg(inputFields);
   }
@@ -41,7 +53,8 @@ const createContact = () => {
   phoneNum.value = "";
 };
 
-const toggleEdit = (contactItem) => {
+const toggleEdit = (uniqueId) => {
+  const contactItem = document.querySelector(`#${uniqueId}`);
   const nameInput = contactItem.querySelector("input[type='text']");
   const phoneInput = contactItem.querySelector("input[type='tel']");
   const editBtn = contactItem.querySelector(".btn-edit");
@@ -61,7 +74,8 @@ const toggleEdit = (contactItem) => {
   }
 };
 
-const deleteContact = (contactItem) => {
+const deleteContact = (uniqueId) => {
+  const contactItem = document.querySelector(`#${uniqueId}`);
   contactItem.remove();
 };
 
@@ -71,13 +85,3 @@ const deleteWholeList = () => {
 
 contactCreateBtn.addEventListener("click", createContact);
 btnDeleteList.addEventListener("click", deleteWholeList);
-
-contactList.addEventListener("click", function (e) {
-  const contactItem = e.target.closest("li");
-  if (e.target.classList.contains("btn-edit")) {
-    toggleEdit(contactItem);
-  }
-  if (e.target.classList.contains("btn-delete")) {
-    deleteContact(contactItem);
-  }
-});
